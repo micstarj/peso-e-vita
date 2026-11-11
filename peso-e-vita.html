@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peso e vita</title>
+<style>
+:root{--bg:#eef2f4;--card:#fff;--ink:#14232b;--mute:#5d7079;--line:#d5dee3;--w:#0f766e;--v:#c2410c;--ok:#0f766e;--warn:#b45309;--bad:#b91c1c;--flat:#475569;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a20;--card:#16262e;--ink:#e6eef1;--mute:#93a8b1;--line:#27404b;--w:#4fd1c5;--v:#fb923c;--ok:#4fd1c5;--warn:#fbbf24;--bad:#f87171;--flat:#a8b8c0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1a20;--card:#16262e;--ink:#e6eef1;--mute:#93a8b1;--line:#27404b;--w:#4fd1c5;--v:#fb923c;--ok:#4fd1c5;--warn:#fbbf24;--bad:#f87171;--flat:#a8b8c0;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 2px;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:0 0 16px;font-size:.92rem}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{font-size:1rem;margin:0 0 10px}
+.verdict{border-left:6px solid var(--flat)}
+.verdict.ok{border-color:var(--ok)}.verdict.warn{border-color:var(--warn)}.verdict.bad{border-color:var(--bad)}
+.verdict .t{font-size:1.3rem;font-weight:700;line-height:1.25;margin:0 0 6px}
+.verdict.ok .t{color:var(--ok)}.verdict.warn .t{color:var(--warn)}.verdict.bad .t{color:var(--bad)}
+.verdict p{margin:0 0 6px}
+.nums{display:flex;gap:14px;margin:10px 0 6px;flex-wrap:wrap}
+.nums div{min-width:70px}.nums b{display:block;font-size:1.35rem}.nums span{color:var(--mute);font-size:.85rem}
+.note{color:var(--mute);font-size:.85rem;margin:6px 0 0}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mute);gap:3px}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;min-height:44px}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--w);outline-offset:1px}
+details{grid-column:1/-1}summary{cursor:pointer;color:var(--mute);font-size:.9rem;padding:6px 0}
+details .g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.full{grid-column:1/-1}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:12px;min-height:44px;background:var(--w);color:#fff;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.pri{color:#06201d}}
+button.ghost{background:transparent;color:var(--mute);border:1px solid var(--line);padding:6px 10px;min-height:34px;font-weight:500;font-size:.85rem}
+.err{color:var(--bad);font-size:.88rem;grid-column:1/-1;min-height:1.2em}
+.legend{display:flex;gap:14px;font-size:.85rem;color:var(--mute);margin-bottom:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+svg{width:100%;height:auto;display:block}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}td .note{margin:0;white-space:normal}
+th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:500}
+.empty{color:var(--mute);margin:0}
+</style>
+</head>
+<body>
+<main>
+<h1>Peso e vita</h1>
+<p class="sub">Il peso da solo inganna. Qui lo leggi insieme al girovita per capire se stai mettendo massa o grasso.</p>
+
+<section id="verdict" class="verdict"></section>
+
+<section>
+<h2>Nuova misurazione</h2>
+<form id="f" novalidate>
+<label>Data<input type="date" id="d" required></label>
+<label>Peso (kg)<input type="number" id="p" step="0.05" min="20" max="300" inputmode="decimal" required></label>
+<label class="full">Vita (cm), facoltativa: una volta a settimana, punto più stretto sopra l’ombelico<input type="number" id="v" step="0.5" min="40" max="200" inputmode="decimal"></label>
+<details><summary>Altre misure (facoltative)</summary>
+<div class="g">
+<label>Torace (cm)<input type="number" id="t" step="0.5" inputmode="decimal"></label>
+<label>Fianchi (cm)<input type="number" id="h" step="0.5" inputmode="decimal"></label>
+<label>Braccio rilassato (cm)<input type="number" id="b" step="0.5" inputmode="decimal"></label>
+<label>Coscia (cm)<input type="number" id="c" step="0.5" inputmode="decimal"></label>
+</div></details>
+<div class="err" id="e" role="alert"></div>
+<button class="pri full" type="submit">Salva misurazione</button>
+</form>
+<p class="note">Pesati ogni mattina, a digiuno, dopo il bagno. Misura la vita una volta a settimana, sempre nello stesso giorno.</p>
+</section>
+
+<section id="chartBox" hidden>
+<h2>Andamento</h2>
+<div class="legend"><span><i style="background:var(--w)"></i>Peso</span><span><i style="background:var(--v)"></i>Vita</span></div>
+<svg id="chart" viewBox="0 0 320 150" role="img" aria-label="Andamento di peso e vita nel tempo"></svg>
+<p class="note">Medie settimanali. Ogni linea ha la sua scala: conta la direzione, non l’altezza.</p>
+</section>
+
+<section>
+<h2>Storico</h2>
+<div class="scroll" id="hist"></div>
+</section>
+</main>
+
+<script>
+(function(){
+var KEY="peso-vita-v1";
+var $=function(i){return document.getElementById(i)};
+var data=[];
+function load(){try{var r=localStorage.getItem(KEY);data=r?JSON.parse(r):[]}catch(e){data=[]}if(!Array.isArray(data))data=[]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+function fmt(n,d){return Number(n).toFixed(d==null?1:d).replace(".",",")}
+function sgn(n,d){return (n>0?"+":n<0?"−":"")+fmt(Math.abs(n),d)}
+function dt(s){var a=s.split("-");return new Date(+a[0],+a[1]-1,+a[2])}
+function days(a,b){return Math.round((dt(b)-dt(a))/86400000)}
+function nice(s){var x=dt(s);return x.toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"2-digit"})}
+function sorted(){return data.slice().sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0})}
+
+function pad2(x){return (x<10?"0":"")+x}
+function iso(x){return x.getFullYear()+"-"+pad2(x.getMonth()+1)+"-"+pad2(x.getDate())}
+function mon(s){var x=dt(s);x.setDate(x.getDate()-((x.getDay()+6)%7));return iso(x)}
+var KS=["p","v","t","h","b","c"];
+function weeks(){
+ var m={},o=[];
+ sorted().forEach(function(e){
+  var k=mon(e.d),w=m[k];
+  if(!w){w=m[k]={k:k,s:{},n:{}};KS.forEach(function(q){w.s[q]=0;w.n[q]=0});o.push(w)}
+  KS.forEach(function(q){if(e[q]!=null){w.s[q]+=e[q];w.n[q]++}});
+ });
+ o.forEach(function(w){w.a={};KS.forEach(function(q){w.a[q]=w.n[q]?w.s[q]/w.n[q]:null})});
+ return o;
+}
+
+function analyse(){
+ var w=weeks().filter(function(x){return x.a.p!=null&&x.a.v!=null});
+ if(w.length<2)return null;
+ var L=w[w.length-1],R=w[w.length-2],n=days(R.k,L.k),wk=n/7;
+ var dw=L.a.p-R.a.p,dv=L.a.v-R.a.v,t,msg,cls="flat",ratio=null;
+ if(dw>=0.2){
+  ratio=dv/dw;
+  if(dv<=0){cls="ok";t="Ottimo: peso su, vita ferma";msg="Stai prendendo peso senza allargare la vita. È il segnale migliore per una massa pulita."}
+  else if(ratio<=0.5){cls="ok";t="Sta funzionando";msg="Il peso medio sale e la vita cresce poco: per ogni kg in più ti ritrovi meno di mezzo cm in vita."}
+  else if(ratio<=1){cls="warn";t="Attenzione: la vita cresce un po’ troppo";msg="Parte del peso in più è probabilmente grasso. Se si ripete la settimana prossima, riduci un poco le calorie."}
+  else{cls="bad";t="Surplus probabilmente troppo alto";msg="La vita cresce più di 1 cm per ogni kg preso. Conviene ridurre le calorie e rivedere i numeri tra una settimana."}
+  if(dw/wk>0.5&&cls!=="bad"){msg+=" Inoltre sali più di 0,5 kg a settimana: è un ritmo veloce."}
+ }else if(dw<=-0.2){
+  if(dv<0){cls="ok";t="Stai dimagrendo";msg="Peso medio e vita scendono insieme."}
+  else{cls="warn";t="Peso giù, vita non scende";msg="Può essere acqua o massa magra persa. Guarda le altre misure e il trend nelle prossime settimane."}
+ }else{
+  if(dv<=-1){cls="ok";t="Ricomposizione";msg="Il peso medio è stabile ma la vita scende: stai perdendo grasso mantenendo il resto."}
+  else if(dv>=1){cls="warn";t="Vita su a peso fermo";msg="Controlla alimentazione e misurazione: la vita sale senza che il peso medio cambi."}
+  else{t="Tutto fermo";msg="Peso medio e vita sono stabili. Se l’obiettivo è crescere, valuta di aumentare un po’ le calorie."}
+ }
+ var extra=[];
+ [["t","Torace"],["b","Braccio"],["c","Coscia"],["h","Fianchi"]].forEach(function(k){
+  if(L.a[k[0]]!=null&&R.a[k[0]]!=null){extra.push(k[1]+" "+sgn(L.a[k[0]]-R.a[k[0]])+" cm")}
+ });
+ return {cls:cls,t:t,msg:msg,dw:dw,dv:dv,ratio:ratio,extra:extra,L:L,R:R,open:mon(iso(new Date()))===L.k};
+}
+
+function renderVerdict(){
+ var el=$("verdict"),a=analyse();
+ if(!a){
+  el.className="verdict";
+  el.innerHTML='<p class="t">Servono due settimane con peso e vita</p><p class="empty">Pesati ogni mattina e misura la vita una volta a settimana. L’app fa la media del peso di ogni settimana (da lunedì a domenica) e la confronta con la precedente.</p>';
+  return;
+ }
+ var L=a.L,R=a.R;
+ el.className="verdict "+a.cls;
+ var h='<p class="t">'+a.t+'</p><p>'+a.msg+'</p><div class="nums">'
+  +'<div><b>'+sgn(a.dw,2)+' kg</b><span>peso medio</span></div>'
+  +'<div><b>'+sgn(a.dv)+' cm</b><span>vita</span></div>'
+  +'<div><b>'+(a.ratio!=null&&a.dw>=0.2?fmt(a.ratio,1):"–")+'</b><span>cm di vita per kg</span></div></div>';
+ h+='<p class="note">Settimana del '+nice(L.k)+': peso medio '+fmt(L.a.p,2)+' kg ('+L.n.p+' pesate), vita '+fmt(L.a.v)+' cm.<br>Settimana del '+nice(R.k)+': peso medio '+fmt(R.a.p,2)+' kg ('+R.n.p+' pesate), vita '+fmt(R.a.v)+' cm.'+(a.extra.length?'<br>Altre misure: '+a.extra.join(", ")+'.':'')+'</p>';
+ if(a.open)h+='<p class="note">La settimana in corso non è finita: la media può ancora cambiare.</p>';
+ h+='<p class="note">Le soglie sono indicative, non un parere medico.</p>';
+ el.innerHTML=h;
+}
+
+function renderChart(){
+ var ws=weeks(),box=$("chartBox");
+ var wp=ws.filter(function(x){return x.a.p!=null});
+ if(wp.length<2){box.hidden=true;return}
+ box.hidden=false;
+ var W=320,H=150,L=34,R=34,T=14,B=26,iw=W-L-R,ih=H-T-B;
+ var t0=dt(ws[0].k).getTime(),t1=dt(ws[ws.length-1].k).getTime(),span=Math.max(t1-t0,1);
+ function X(x){return L+(dt(x.k).getTime()-t0)/span*iw}
+ function sc(key){
+  var v=ws.filter(function(x){return x.a[key]!=null}).map(function(x){return x.a[key]});
+  if(!v.length)return null;
+  var mn=Math.min.apply(0,v),mx=Math.max.apply(0,v);
+  if(mx-mn<1){var m=(mx+mn)/2;mn=m-.5;mx=m+.5}
+  return {mn:mn,mx:mx,y:function(z){return T+ih-(z-mn)/(mx-mn)*ih}};
+ }
+ var sw=sc("p"),sv=sc("v"),o="";
+ o+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+(T+ih)+'" y2="'+(T+ih)+'" stroke="var(--line)"/>';
+ function line(key,c,S){
+  if(!S)return "";
+  var pp=ws.filter(function(x){return x.a[key]!=null});
+  var pts=pp.map(function(x){return X(x).toFixed(1)+","+S.y(x.a[key]).toFixed(1)}).join(" ");
+  var r=pp.length>1?'<polyline points="'+pts+'" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linejoin="round"/>':'';
+  pp.forEach(function(x){r+='<circle cx="'+X(x).toFixed(1)+'" cy="'+S.y(x.a[key]).toFixed(1)+'" r="3.5" fill="'+c+'"/>'});
+  return r;
+ }
+ o+=line("p","var(--w)",sw)+line("v","var(--v)",sv);
+ o+='<text x="'+(L-5)+'" y="'+(T+4)+'" text-anchor="end" font-size="10" fill="var(--w)">'+fmt(sw.mx)+'</text>'
+  +'<text x="'+(L-5)+'" y="'+(T+ih)+'" text-anchor="end" font-size="10" fill="var(--w)">'+fmt(sw.mn)+'</text>';
+ if(sv)o+='<text x="'+(W-R+5)+'" y="'+(T+4)+'" font-size="10" fill="var(--v)">'+fmt(sv.mx)+'</text>'
+  +'<text x="'+(W-R+5)+'" y="'+(T+ih)+'" font-size="10" fill="var(--v)">'+fmt(sv.mn)+'</text>';
+ o+='<text x="'+L+'" y="'+(H-8)+'" font-size="10" fill="var(--mute)">'+nice(ws[0].k)+'</text>'
+  +'<text x="'+(W-R)+'" y="'+(H-8)+'" text-anchor="end" font-size="10" fill="var(--mute)">'+nice(ws[ws.length-1].k)+'</text>';
+ $("chart").innerHTML=o;
+}
+
+function renderHist(){
+ var el=$("hist"),s=sorted().reverse();
+ if(!s.length){el.innerHTML='<p class="empty">Ancora nessuna misurazione.</p>';return}
+ var ws=weeks().reverse();
+ var h='<p class="note"><b>Medie settimanali</b></p><table><thead><tr><th>Settimana</th><th>Peso medio</th><th>Vita</th></tr></thead><tbody>';
+ ws.forEach(function(w){
+  h+='<tr><td>dal '+nice(w.k)+'<br><span class="note">'+w.n.p+' pesate</span></td><td>'+(w.a.p!=null?fmt(w.a.p,2):"–")+'</td><td>'+(w.a.v!=null?fmt(w.a.v):"–")+'</td></tr>';
+ });
+ h+='</tbody></table><p class="note" style="margin-top:16px"><b>Singole misurazioni</b></p><table><thead><tr><th>Data</th><th>Peso</th><th>Vita</th><th></th></tr></thead><tbody>';
+ s.forEach(function(x){
+  var ex=[];
+  [["t","Torace"],["h","Fianchi"],["b","Braccio"],["c","Coscia"]].forEach(function(k){if(x[k[0]]!=null)ex.push(k[1]+" "+fmt(x[k[0]]))});
+  h+='<tr><td>'+nice(x.d)+(ex.length?'<br><span class="note">'+ex.join(" · ")+'</span>':'')+'</td><td>'+fmt(x.p,2)+'</td><td>'+(x.v!=null?fmt(x.v):"–")+'</td><td><button class="ghost" data-id="'+x.id+'" aria-label="Elimina misurazione del '+nice(x.d)+'">Elimina</button></td></tr>';
+ });
+ el.innerHTML=h+'</tbody></table>';
+}
+
+function render(){renderVerdict();renderChart();renderHist()}
+
+function num(id){var v=$(id).value.replace(",",".").trim();if(v==="")return null;var n=parseFloat(v);return isNaN(n)?NaN:n}
+
+$("f").addEventListener("submit",function(ev){
+ ev.preventDefault();
+ var d=$("d").value,p=num("p"),v=num("v"),e=$("e");
+ if(!d){e.textContent="Scegli la data.";return}
+ if(p==null||isNaN(p)||p<20||p>300){e.textContent="Inserisci un peso valido in kg.";return}
+ if(v!=null&&(isNaN(v)||v<40||v>200)){e.textContent="Inserisci una vita valida in cm, oppure lasciala vuota.";return}
+ var r={id:Date.now().toString(36),d:d,p:p};if(v!=null)r.v=v;
+ ["t","h","b","c"].forEach(function(k){var n=num(k);if(n!=null&&!isNaN(n))r[k]=n});
+ data=data.filter(function(x){return x.d!==d});
+ data.push(r);save();e.textContent="";
+ ["p","v","t","h","b","c"].forEach(function(k){$(k).value=""});
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+});
+
+$("hist").addEventListener("click",function(ev){
+ var b=ev.target.closest("button[data-id]");if(!b)return;
+ if(!confirm("Eliminare questa misurazione?"))return;
+ data=data.filter(function(x){return x.id!==b.getAttribute("data-id")});
+ save();render();
+});
+
+var n=new Date(),pad=function(x){return (x<10?"0":"")+x};
+$("d").value=n.getFullYear()+"-"+pad(n.getMonth()+1)+"-"+pad(n.getDate());
+load();render();
+})();
+</script>
+</body>
+</html>
